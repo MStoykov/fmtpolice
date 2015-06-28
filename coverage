@@ -8,6 +8,7 @@ main() {
   _cd_into_top_level
   _generate_coverage_files
   _combine_coverage_reports
+  exit $fail
 }
 
 _cd_into_top_level() {
