@@ -4,7 +4,7 @@ readonly GOPATH="${GOPATH%%:*}"
 
 main() {
   check_fmt
-  check_lint
+#  check_lint
 }
 
 check_fmt() {
