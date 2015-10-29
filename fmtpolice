@@ -1,6 +1,7 @@
 #!/bin/bash
 
 readonly GOPATH="${GOPATH%%:*}"
+files=$(git ls-files '*.go' | grep -v 'vendor/*')
 
 main() {
   check_fmt
@@ -9,7 +10,7 @@ main() {
 
 check_fmt() {
   eval "set -e"
-  for file in $(git ls-files '*.go') ; do
+  for file in $files ; do
     gofmt $file | diff -u $file -
   done
   eval "set +e"
@@ -18,7 +19,7 @@ check_fmt() {
 check_lint() {
   _install_linter
 
-  for file in $(git ls-files '*.go') ; do
+  for file in $files; do
     if [[ ! "$(${GOPATH}/bin/golint $file)" =~ ^[[:blank:]]*$ ]] ; then
       _lint_verbose && exit 1
     fi
@@ -26,7 +27,7 @@ check_lint() {
 }
 
 _lint_verbose() {
-  for file in $(git ls-files '*.go') ; do $GOPATH/bin/golint $file ; done
+  for file in $files; do $GOPATH/bin/golint $file ; done
 }
 
 _install_linter() {

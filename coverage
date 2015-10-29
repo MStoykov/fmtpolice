@@ -16,7 +16,7 @@ _cd_into_top_level() {
 }
 
 _generate_coverage_files() {
-  for dir in $(find . -maxdepth 10 -not -path './.git*' -not -path '*/_*' -type d); do
+  for dir in $(find . -maxdepth 10 -not -path './.git*' -not -path '*/_*' -not -path './vendor/*' -type d); do
     if ls $dir/*.go &>/dev/null ; then
       go test -race "$@" -coverprofile=$dir/profile.coverprofile $dir | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' || fail=1 
     fi
