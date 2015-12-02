@@ -1,33 +1,29 @@
 #!/bin/bash
+set -e
 
 readonly GOPATH="${GOPATH%%:*}"
 files=$(git ls-files '*.go' | grep -v 'vendor/*')
 
 main() {
   check_fmt
-#  check_lint
+  check_lint
 }
 
 check_fmt() {
-  eval "set -e"
   for file in $files ; do
     gofmt $file | diff -u $file -
   done
-  eval "set +e"
 }
 
 check_lint() {
   _install_linter
 
-  for file in $files; do
-    if [[ ! "$(${GOPATH}/bin/golint $file)" =~ ^[[:blank:]]*$ ]] ; then
-      _lint_verbose && exit 1
+  for package in $(go list ./... | grep -v '/vendor/') ; do
+    lint=$(${GOPATH}/bin/golint $package 2>&1)
+    if [[ ! "$lint" =~ ^[[:blank:]]*$ ]] ; then
+      echo "$lint" && exit 1
     fi
   done
-}
-
-_lint_verbose() {
-  for file in $files; do $GOPATH/bin/golint $file ; done
 }
 
 _install_linter() {
